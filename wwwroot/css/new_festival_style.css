@@ -1,0 +1,11 @@
+
+div.banner {margin-top: 30px; color: white;}
+body {background-image: url("/img/audience-1867984_1920.jpg"); content: ""; opacity: 0.7; top: 0; left: 0; bottom: 0; right: 0; position: absolute; z-index: 1;}
+h1, .home, .logout {display: inline-block; vertical-align: top;}
+.home {margin-left: 500px;}
+.logout {margin-left: 70px;}
+div.line {margin-top: 20px; color: white; width: 1000; border: solid white 1px; margin-bottom: 30px;}
+div.container h2 {margin-top: 70px; color: white;}
+textarea, .hi {width:1085px;}
+.btn, .btn-primary {margin-left: 930px;}
+label {color: white;}

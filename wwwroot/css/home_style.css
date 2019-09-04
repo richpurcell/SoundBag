@@ -1,0 +1,13 @@
+body {background-image: url("/img/concert-768722_1920.jpg"); content: ""; top: 0; left: 0; bottom: 0; right: 0; position: absolute; z-index: 1;}
+div.container {color: white;}
+div.table table {color: black;}
+div.table thead {color: white;}
+h4.name {color: black; margin-left: 300px;}
+div.banner a.name {color: black;}
+div.banner {margin-top: 30px; display: block;}
+div.banner h1, h4 {display: inline-block; vertical-align: top; color: black;}
+div.banner a.logout {margin-left: 70px; color: black;}
+div.banner div.line {margin-top: 20px; color: white; width: 1000; border: solid white 1px; margin-bottom: 30px;}
+a.btn {margin-left: 930px;}
+a {color: rgb(53, 50, 50);}
+span {color: white;}

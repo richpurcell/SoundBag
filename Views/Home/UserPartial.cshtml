@@ -1,0 +1,41 @@
+<nav>
+    <div class="container">
+    @model User
+    <form asp-action="AddUser" asp-controller="Home" method="post"> <!-- Login is the Method name and Home is the controller (HomeController.cs)-->
+        <div class="form-group-row">
+            <span asp-validation-for="FirstName"></span>
+            <label asp-for="FirstName" class="col-md-4 col-form-label"></label>
+            <div class="col-md-6">
+                <input asp-for="FirstName" id="inputFirstName" placeholder="First Name" class="form-control" >
+            </div>
+        </div>
+        <div class="form-group-row">
+            <span asp-validation-for="LastName"></span>
+            <label asp-for="LastName" class="col-md-4 col-form-label"></label>
+            <div class="col-md-6">
+                <input asp-for="LastName" id="inputLastName" placeholder="Last Name" class="form-control" >
+            </div>
+        </div>
+            <div class="form-group col-md-6">
+                <span asp-validation-for="Email"></span>
+                <label asp-for="Email" ></label>
+                <input asp-for="Email" id="inputEmail" placeholder="Email" class="form-control">
+            </div>
+            <div class="form-group col-md-6">
+                <span asp-validation-for="Password"></span>
+                <label asp-for="Password" ></label>
+                <input asp-for="Password" id="inputPassword" placeholder="Password" class="form-control">
+            </div>
+            <div class="form-group col-md-6">
+                <span asp-validation-for="Confirm"></span>
+                <label asp-for="Confirm" ></label>
+                <input asp-for="Confirm" id="inputPassword" placeholder="Confirm" class="form-control" >
+            </div>
+            <div class="form-group col-md-6">
+                <button type="submit" class="btn btn-primary mb-2">Sign up</button>
+            </div>
+    </form>
+    </div>
+</nav>
+
+

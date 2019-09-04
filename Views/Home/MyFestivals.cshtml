@@ -1,0 +1,138 @@
+@model Wrapper
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SoundBag</title>
+    <link rel="stylesheet" href="/css/my_festivals_style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="banner">
+            <h1>SoundBag Festivals</h1>
+            <a href="/home" class="home"><h4>Home</h4></a>
+            <a href="/logout" class="logout"><h4>Logout</h4></a>
+            <div class="line"></div>
+        </div>
+        <h4>Festivals I'm Attending</h4>
+        <div class="table">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                    <th scope="col"><h5>Festival</h5></th>
+                    <th scope="col"><h5>Tickets</h5></th>
+                    <th scope="col"><h5>Start Date</h5></th>
+                    <th scope="col"><h5>End Date</h5></th>
+                    <th scope="col"><h5>Lineup</h5></th>
+                    <th scope="col"><h5>Attending</h5></th>
+                    <th scope="col"><h5>Actions</h5></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var festival in Model.AllFestivals){
+                        var yes = ((IEnumerable<dynamic>)festival.Attendees).Select(att=>att.AttendeeId);
+                        @if(yes.Contains((int)ViewBag.UserId)){
+                        <tr>
+                            <td>
+                                <a href="/festival/@festival.FestivalId"><h5>@festival.Title</h5></a>
+                            </td>
+                            <td>
+                                <a href="@festival.TicketLink"><h5>Tickets</h5></a>
+                            </td>
+                            <td>
+                                <h5>@festival.StartDate.ToString("MMM d")</h5>
+                            </td>
+                            <td>
+                                <h5>@festival.EndDate.ToString("MMM d")</h5>
+                            </td>
+                            <td>
+                                <a href="@festival.LineupLink"><h5>@festival.Title.Split(" ")[0]</h5></a>
+                            </td>
+                            <td>
+                                <h5 class=" text-center" >@festival.Attendees.Count()</h5>
+                            </td>
+                            <td>
+                                @{
+                                    if(festival.OrganizerId == ViewBag.UserId)
+                                    {
+                                        <a href="/delete/@festival.FestivalId"><h5>Delete</h5></a>
+                                    } else {
+                                        <!-- var yes = ((IEnumerable<dynamic>)festival.Attendees).Select(att=>att.AttendeeId); -->
+                                        @if(yes.Contains((int)ViewBag.UserId)){
+                                            <a href="/leave/@festival.FestivalId/mylist"><h5>Leave</h5></a>
+                                        } else {
+                                            <a href="/join/@festival.FestivalId/mylist"><h5>Join</h5></a>
+                                        }
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="line"></div>
+        <h4>Other Festivals</h4>
+        <div class="table2">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                    <th scope="col"><h5>Festival</h5></th>
+                    <th scope="col"><h5>Tickets</h5></th>
+                    <th scope="col"><h5>Start Date</h5></th>
+                    <th scope="col"><h5>End Date</h5></th>
+                    <th scope="col"><h5>Lineup</h5></th>
+                    <th scope="col"><h5>Attending</h5></th>
+                    <th scope="col"><h5>Actions</h5></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var festival in Model.AllFestivals){
+                        var yes = ((IEnumerable<dynamic>)festival.Attendees).Select(att=>att.AttendeeId);
+                        @if(!yes.Contains((int)ViewBag.UserId)){
+                        <tr>
+                            <td>
+                                <a href="/festival/@festival.FestivalId"><h5>@festival.Title</h5></a>
+                            </td>
+                            <td>
+                                <a href="@festival.TicketLink"><h5>Tickets</h5></a>
+                            </td>
+                            <td>
+                                <h5>@festival.StartDate.ToString("MMM d")</h5>
+                            </td>
+                            <td>
+                                <h5>@festival.EndDate.ToString("MMM d")</h5>
+                            </td>
+                            <td>
+                                <a href="@festival.LineupLink"><h5>@festival.Title.Split(" ")[0]</h5></a>
+                            </td>
+                            <td>
+                                <h5 class=" text-center" >@festival.Attendees.Count()</h5>
+                            </td>
+                            <td>
+                                @{
+                                    if(festival.OrganizerId == ViewBag.UserId)
+                                    {
+                                        <a href="/delete/@festival.FestivalId"><h5>Delete</h5></a>
+                                    } else {
+                                        <!-- var yes = ((IEnumerable<dynamic>)festival.Attendees).Select(att=>att.AttendeeId); -->
+                                        @if(yes.Contains((int)ViewBag.UserId)){
+                                            <a href="/leave/@festival.FestivalId/mylist"><h5>Leave</h5></a>
+                                        } else {
+                                            <a href="/join/@festival.FestivalId/mylist"><h5>Join</h5></a>
+                                        }
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

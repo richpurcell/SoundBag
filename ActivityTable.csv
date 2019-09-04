@@ -1,0 +1,5 @@
+ActivityId,Title,ActivityDate,ActivityTime,Duration,Multiplier,Description,CreatedAt,UpdatedAt,OrganizerId
+1,"Pool Party","2020-01-08 00:00:00.000000","2019-08-23 15:00:00.000000",1,"Hour(s)","a cool pool party","2019-08-23 14:50:17.077710","2019-08-23 14:50:17.077714",2
+3,"Soccer in the Park","2019-08-30 00:00:00.000000","2019-08-23 15:00:00.000000",2,"Hour(s)",qefneqofhew,"2019-08-23 14:58:15.725096","2019-08-23 14:58:15.725112",4
+4,"Passing the Belt Exam","2019-08-24 00:00:00.000000","2019-08-23 14:30:00.000000",5,"Minute(s)",qmegwhyjyuyere,"2019-08-23 15:00:11.073387","2019-08-23 15:00:11.073392",5
+5,"Soccer in the Park","2022-01-01 00:00:00.000000","2019-08-23 01:00:00.000000",2,"Hour(s)",kjhdkhdkuwehkduweh,"2019-08-23 15:00:59.234645","2019-08-23 15:00:59.234649",5

@@ -1,0 +1,95 @@
+@model Festival
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SoundBag</title>
+    <link rel="stylesheet" href="/css/new_festival_style.css">
+</head>
+<body>
+    </html>
+    <div class="container">
+        <div class="banner">
+            <h1>SoundBag Festivals</h1>
+            <a href="/home" class="home"><h4>Home</h4></a>
+            <a href="/logout" class="logout"><h4>Logout</h4></a>
+            <div class="line"></div>
+        </div>
+        <h2>Add a Festival</h2>
+        <div class="form">
+            <form asp-action="AddFestival" asp-controller="Home" method="post">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <span asp-validation-for="Title"></span>
+                        <label asp-for="Title"></label>
+                        <input asp-for="Title" type="text" class="form-control" id="inputEmail4" placeholder="Title">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <span asp-validation-for="Type"></span>
+                        <label asp-for="Type"></label>
+                        <input asp-for="Type" type="text" class="form-control" id="inputEmail4" placeholder="Music Festival">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <span asp-validation-for="StartDate"></span>
+                        <label asp-for="StartDate"></label>
+                        <input asp-for="StartDate" type="date" class="form-control" id="inputEmail4" placeholder="StartDate">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <span asp-validation-for="EndDate"></span>
+                        <label asp-for="EndDate"></label>
+                        <input asp-for="EndDate" type="date" class="form-control" id="inputEmail4" placeholder="EndDate">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-5">
+                        <span asp-validation-for="Address"></span>
+                        <label asp-for="Address"></label>
+                        <input asp-for="Address" type="text" class="form-control" id="inputEmail4" placeholder="Address">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <span asp-validation-for="City"></span>
+                        <label asp-for="City"></label>
+                        <input asp-for="City" type="text" class="form-control" id="inputEmail4" placeholder="City">
+                    </div>
+                    <div class="form-group col-md-1">
+                        <span asp-validation-for="State"></span>
+                        <label asp-for="State"></label>
+                        <input asp-for="State" type="text" class="form-control" id="inputEmail4" placeholder="State">
+                    </div>
+                    <div class="form-group col-md-1">
+                        <span asp-validation-for="ZipCode"></span>
+                        <label asp-for="ZipCode"></label>
+                        <input asp-for="ZipCode" type="text" class="form-control" id="inputEmail4" placeholder="Zip">
+                    </div>
+                    <div class="form-group col-md-1">
+                        <span asp-validation-for="Country"></span>
+                        <label asp-for="Country"></label>
+                        <input asp-for="Country" type="text" class="form-control" id="inputEmail4" placeholder="US">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <span asp-validation-for="TicketLink"></span>
+                    <label asp-for="TicketLink"></label>
+                    <input asp-for="TicketLink" type="text" class="form-control" id="inputEmail4" placeholder="http://">
+                </div>
+                <div class="form-row">
+                    <span asp-validation-for="LineupLink"></span>
+                    <label asp-for="LineupLink"></label>
+                    <input asp-for="LineupLink" type="text" class="form-control" id="inputEmail4" placeholder="http://">
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <span asp-validation-for="Description"></span>
+                        <label asp-for="Description"></label>
+                        <textarea asp-for="Description" type="text" class="hi form-control" cols="200" rows="10" id="inputEmail4"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Festival</button>
+            </form>
+        </div>
+    </div>
+</body>
