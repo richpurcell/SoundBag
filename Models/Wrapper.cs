@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SoundBag.Models
 {
@@ -12,5 +13,8 @@ namespace SoundBag.Models
         public Festival OneFestival {get;set;}
         public Post OnePost {get;set;}
         public List<Post> AllPosts {get;set;}
+        public int UserId {get;set;}
+        public Task<Weather> Weather {get;set;}
+        public Festival AllParticipants {get;set;}
     }
 }

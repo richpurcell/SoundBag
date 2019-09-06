@@ -140,41 +140,30 @@ namespace SoundBag.Controllers
         [HttpGet("festival/{FestivalId}")]
         public IActionResult ViewFestival(int FestivalId)
         {
-            string path = "http://api.openweathermap.org/data/2.5/weather?q=Seattle&units=imperial&appid=bc1ba8674a46abbc8566c8993f206ebd";
+            Wrapper wrapper = new Wrapper();
+            ApiKeys apiKey = new ApiKeys();
             int? UserId = HttpContext.Session.GetInt32("UserId");
             if(UserId == null)
             {
                 return RedirectToAction("index");
             }
-            Festival ThisFestival = dbContext.festivals.FirstOrDefault(u => u.FestivalId == FestivalId);
-            Wrapper wrapper = new Wrapper();
-            Post post = new Post();
-            List<Post> AllPosts = dbContext.posts
+            wrapper.OneFestival = dbContext.festivals.FirstOrDefault(u => u.FestivalId == FestivalId);
+            wrapper.OnePost = new Post();
+            wrapper.AllPosts = dbContext.posts
                 .Where(p=>p.FestivalId == FestivalId)
                 .OrderByDescending(p=>p.created_at)
                 .ToList();
-            List<User> AllUsers = dbContext.users.ToList();
-            ViewBag.ThisFestival = ThisFestival;
-            ViewBag.FestivalId = FestivalId;
-            ViewBag.AllUsers = AllUsers;
-            ViewBag.AllPosts = AllPosts;
-            ViewBag.UserId = UserId;
-            var weather = Helper.GetWeatherAsync(path);
-            System.Console.WriteLine($"weather path: {path}");
-            ViewBag.Weather = weather;
-            string query = ThisFestival.Title;
+            wrapper.AllUsers = dbContext.users.ToList();
+            string query = wrapper.OneFestival.Title;
             var result = Helper.GetPhotsAsync(query);
-            System.Console.WriteLine($"weather: {weather}");
-            System.Console.WriteLine($"result: {result}");
             ViewBag.Photos = result;
-            var FestivalWithParticipants = dbContext.festivals
+            wrapper.OneFestival = dbContext.festivals
                 .Include(w=>w.Attendees)
                 .ThenInclude(a=>a.Attendee)
                 .FirstOrDefault(w=>w.FestivalId == FestivalId);
-            ViewBag.AllParticipants = FestivalWithParticipants;
-            ViewBag.Organizer = dbContext.users.FirstOrDefault(o=>o.UserId == ThisFestival.OrganizerId);
-            wrapper.OneFestival = FestivalWithParticipants;
-            wrapper.OnePost = post;
+            string path = $"http://api.openweathermap.org/data/2.5/weather?q={wrapper.OneFestival.City}&units=imperial&appid={apiKey.Weather}";
+            wrapper.Weather = Helper.GetWeatherAsync(path);
+            wrapper.UserId = (int)UserId;
             return View("ViewFestival", wrapper);
         }
         [HttpGet("delete/{FestivalId}")]
@@ -193,26 +182,21 @@ namespace SoundBag.Controllers
         [HttpGet("home")]
         public IActionResult Home()
         {
+            Wrapper MyWrapper = new Wrapper();
             int? UserId = HttpContext.Session.GetInt32("UserId");
             if(UserId == null)
             {
                 return RedirectToAction("index");
             }
-            ViewBag.User = dbContext.users.FirstOrDefault(u=>u.UserId == UserId);
-            List<User> AllUsers = dbContext.users.ToList();
-            var FestivalsWithParticipants = dbContext.festivals
+            MyWrapper.AllUsers = dbContext.users.ToList();
+            MyWrapper.AllFestivals = dbContext.festivals
                 .Where(a=>a.EndDate >= DateTime.Today)
                 .Include(w => w.Attendees)
                 .ThenInclude(a=>a.Attendee)
                 .OrderBy(act => act.StartDate)
                 .ToList();
-            var AllAssociations = dbContext.associations.ToList();
-            Wrapper MyWrapper = new Wrapper();
-            MyWrapper.AllFestivals = FestivalsWithParticipants;
-            MyWrapper.AllEvents = AllAssociations;
-            MyWrapper.AllUsers = AllUsers;
-            ViewBag.UserId = (int)UserId;
-            ViewBag.AllUsers = AllUsers;
+            MyWrapper.AllEvents = dbContext.associations.ToList();
+            MyWrapper.UserId = (int)UserId;
             return View("home", MyWrapper);
         }
         [HttpGet("join/{FestivalId}/stay")]
@@ -289,17 +273,17 @@ namespace SoundBag.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Submit(Post myPost)
+        public IActionResult Submit(Wrapper myPost)
         {
             if(ModelState.IsValid)
             {
                 string Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 int? UserId = HttpContext.Session.GetInt32("UserId");
-                myPost.UserId = (int)UserId;
-                dbContext.Add(myPost);
+                myPost.OnePost.UserId = (int)UserId;
+                dbContext.Add(myPost.OnePost);
                 dbContext.SaveChanges();
-                int x = myPost.id;
-                return RedirectToAction("ViewFestival", new {FestivalId=$"{myPost.FestivalId}"});
+                int x = myPost.OnePost.id;
+                return RedirectToAction("ViewFestival", new {FestivalId=$"{myPost.OnePost.FestivalId}"});
             } else {
                 return View("ViewFestival");
             }
@@ -319,7 +303,7 @@ namespace SoundBag.Controllers
                 .ToList();
             Wrapper MyWrapper = new Wrapper();
             MyWrapper.AllFestivals = FestivalsWithParticipants;
-            ViewBag.UserId = UserId;
+            MyWrapper.UserId = (int)UserId;
             return View(MyWrapper);
         }
         public void _helper_leave(int FestivalId, int UserId)
@@ -377,13 +361,13 @@ namespace SoundBag.Controllers
             return weather;
         }
         private const string BaseUrl = "http://pixabay.com/api/";
-        private const string apiKey = "13438940-38787f2d348c48e1492f0f3c9";
+        private static ApiKeys apiKey = new ApiKeys();
         public static async Task<Pixabay> GetPhotsAsync(string query)
         {
             HttpClient aclient = new HttpClient();
             Pixabay pixabay = null;
             query = query.Replace(" ", "+");
-            string path = BaseUrl + "?key=" + apiKey + "&q=" + query + "&image_type=photo";
+            string path = BaseUrl + "?key=" + apiKey.Pixabay + "&q=" + query + "&image_type=photo";
             HttpResponseMessage response = await aclient.GetAsync(path);
             System.Console.WriteLine(path);
             if (response.IsSuccessStatusCode)
@@ -395,19 +379,15 @@ namespace SoundBag.Controllers
     }
     public class PixabayClient
     {
-        // private readonly string apiKey = "563492ad6f91700001000001a9b2b529ec684a51b6ca90d5ea523f15";
-        private readonly string apiKey = "13438940-38787f2d348c48e1492f0f3c9";
-        // private const string BaseUrl = "http://api.pexels.com/v1/";
+        private static ApiKeys apiKey = new ApiKeys();
         private const string BaseUrl = "http://pixabay.com/api/";
         private static readonly HttpClient Client = new HttpClient();
-        public PixabayClient(string apiKey)
+        public PixabayClient(ApiKeys apiKey)
         {
-            Client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", apiKey);
+            Client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", apiKey.Pixabay);
         }
-        // public async Task<Page> SearchAsync(string query, int page = 1, int perPage = 15)
         public async Task<PixPhoto> SearchAsync(string query)
         {
-            // HttpResponseMessage response = await Client.GetAsync(BaseUrl + "search?query=" + Uri.EscapeDataString(query) + "&per_page=" + perPage + "&page=" + page).ConfigureAwait(false);
             HttpResponseMessage response = await Client.GetAsync(BaseUrl + "?key=" + apiKey + "&q=" + query + "&image_type=photo").ConfigureAwait(false);
             return await GetResultAsync(response).ConfigureAwait(false);
         }

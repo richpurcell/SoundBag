@@ -33,7 +33,7 @@
                 <tbody>
                     @foreach(var festival in Model.AllFestivals){
                         var yes = ((IEnumerable<dynamic>)festival.Attendees).Select(att=>att.AttendeeId);
-                        @if(yes.Contains((int)ViewBag.UserId)){
+                        @if(yes.Contains((int)Model.UserId)){
                         <tr>
                             <td>
                                 <a href="/festival/@festival.FestivalId"><h5>@festival.Title</h5></a>
@@ -55,12 +55,12 @@
                             </td>
                             <td>
                                 @{
-                                    if(festival.OrganizerId == ViewBag.UserId)
+                                    if(festival.OrganizerId == Model.UserId)
                                     {
                                         <a href="/delete/@festival.FestivalId"><h5>Delete</h5></a>
                                     } else {
                                         <!-- var yes = ((IEnumerable<dynamic>)festival.Attendees).Select(att=>att.AttendeeId); -->
-                                        @if(yes.Contains((int)ViewBag.UserId)){
+                                        @if(yes.Contains((int)Model.UserId)){
                                             <a href="/leave/@festival.FestivalId/mylist"><h5>Leave</h5></a>
                                         } else {
                                             <a href="/join/@festival.FestivalId/mylist"><h5>Join</h5></a>
@@ -92,7 +92,7 @@
                 <tbody>
                     @foreach(var festival in Model.AllFestivals){
                         var yes = ((IEnumerable<dynamic>)festival.Attendees).Select(att=>att.AttendeeId);
-                        @if(!yes.Contains((int)ViewBag.UserId)){
+                        @if(!yes.Contains((int)Model.UserId)){
                         <tr>
                             <td>
                                 <a href="/festival/@festival.FestivalId"><h5>@festival.Title</h5></a>
@@ -114,12 +114,12 @@
                             </td>
                             <td>
                                 @{
-                                    if(festival.OrganizerId == ViewBag.UserId)
+                                    if(festival.OrganizerId == Model.UserId)
                                     {
                                         <a href="/delete/@festival.FestivalId"><h5>Delete</h5></a>
                                     } else {
                                         <!-- var yes = ((IEnumerable<dynamic>)festival.Attendees).Select(att=>att.AttendeeId); -->
-                                        @if(yes.Contains((int)ViewBag.UserId)){
+                                        @if(yes.Contains((int)Model.UserId)){
                                             <a href="/leave/@festival.FestivalId/mylist"><h5>Leave</h5></a>
                                         } else {
                                             <a href="/join/@festival.FestivalId/mylist"><h5>Join</h5></a>

@@ -2958,7 +2958,7 @@
     ],
     "CSharpLanguageVersion": 800
   },
-  "RootNamespace": null,
+  "RootNamespace": "SoundBag",
   "Documents": [
     {
       "FilePath": "Views/Home/sidebarPartial.cshtml",

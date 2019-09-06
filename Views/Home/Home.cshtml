@@ -1,4 +1,7 @@
 @model Wrapper
+@{
+    var User = Model.AllUsers.FirstOrDefault(u=>u.UserId == Model.UserId);
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +15,7 @@
     <div class="container">
         <div class="banner">
             <h1>SoundBag Festivals</h1>
-            <h4 class="name">Welcome, <a href="/mylist" class="name">@ViewBag.User.FirstName!</a></h4>
+            <h4 class="name">Welcome, <a href="/mylist" class="name">@User.FirstName!</a></h4>
             <h4><a href="/logout" class="logout">Logout</a></h4>
             <div class="line"></div>
         </div>
@@ -52,12 +55,12 @@
                             </td>
                             <td>
                                 @{
-                                    if(festival.OrganizerId == ViewBag.UserId)
+                                    if(festival.OrganizerId == Model.UserId)
                                     {
                                         <a href="/delete/@festival.FestivalId"><h5>Delete</h5></a>
                                     } else {
                                         IEnumerable<int> yes = festival.Attendees.Select(att=>att.AttendeeId);
-                                        @if(yes.Contains((int)ViewBag.UserId)){
+                                        @if(yes.Contains((int)Model.UserId)){
                                             <a href="/leave/@festival.FestivalId"><h5>Leave</h5></a>
                                         } else {
                                             <a href="/join/@festival.FestivalId"><h5>Join</h5></a>
@@ -69,7 +72,7 @@
                     }
                 </tbody>
             </table>
-            @if(ViewBag.User.Admin == true){
+            @if(User.Admin == true){
                 <a href="/new" class="btn"><button class="btn btn-primary">Add Festival</button></a>
             }
         </div>
