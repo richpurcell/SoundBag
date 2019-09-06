@@ -1,0 +1,85 @@
+@model Wrapper
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/css/view_festival_style.css">
+    <title>SoundBag</title>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="banner">
+            <h1>SoundBag Festivals</h1>
+            <a href="/home" class="home"><h4>Home</h4></a>
+            <a href="/logout" class="logout"><h4>Logout</h4></a>
+            <hr>
+        </div>
+        <div class="bar">
+            <h2>@Model.OneFestival.Title</h2>
+            @{IEnumerable<int> yes = Model.OneFestival.Attendees.Select(att=>att.AttendeeId);}
+            @if(yes.Contains((int)Model.UserId)){
+                <a href="/leave/@Model.OneFestival.FestivalId/stay"><button class="btn btn-primary"><h4>Leave</h4></button></a>
+            } else {
+                <a href="/join/@Model.OneFestival.FestivalId/stay"><button class="btn btn-primary"><h4>Join</h4></button></a>
+            }
+            
+        </div>
+        <div class="box">
+            <div class="thisEvent">
+                <h3>Lineup:</h3>
+                <a href="@Model.OneFestival.LineupLink">
+                    @if(Model.OneFestival.LineupLink == null)
+                    {<h3 class="name">Unavailable</h3>} else {<h3 class="name">@Model.OneFestival.Title.Split(" ")[0]</h3>}</a>
+            </div>
+            <div class="weather">
+                <h3>Weather:</h3>
+                <div class="temp">
+                    <h5>@Model.Weather.Result.main.temp &#8457; Temp </h5>
+                    <h5>@Model.Weather.Result.main.temp_max &#8457; High</h5>
+                    <h5>@Model.Weather.Result.main.temp_min &#8457; Low</h5>
+                </div>
+                <div class="temp">
+                    <h5>Sky @Model.Weather.Result.weather[0].main</h5>
+                    <h5>@Model.Weather.Result.wind.speed Wind Speed (mph)</h5>
+                    <h5>@Model.Weather.Result.main.humidity% Humidity</h5>
+                </div>
+            </div>
+            <div class="desc">
+                <h3>Description:</h3>
+                <div class="desc">
+                    <p>@Model.OneFestival.Description</p>
+                </div>
+            </div>
+            <div class="participants">
+                <div class="plist">
+                    <h3>Participants:</h3>
+                    <ul>
+                        @foreach(var part in @Model.OneFestival.Attendees)
+                        {
+                            <h5><li>@part.Attendee.FirstName</li></h5>
+                        }
+                    </ul>
+                </div>
+                <div class="map">
+                    <h3>Location:</h3><h5>@Model.OneFestival.Address, 
+                        @Model.OneFestival.City, @Model.OneFestival.State 
+                        @Model.OneFestival.ZipCode @Model.OneFestival.Country</h5>
+                    <iframe
+                        width="400" height="400" frameborder="0"
+                            src="https://www.google.com/maps/embed/v1/place?key=@ViewBag.apiKey
+                            &q=@Model.OneFestival.Address,@Model.OneFestival.City,@Model.OneFestival.State+@Model.OneFestival.ZipCode" allowfullscreen>
+
+                    </iframe>
+                </div>
+                <div class="sidebar">
+                    <partial name="sidebarPartial" model="@Model" view-data="ViewData"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
