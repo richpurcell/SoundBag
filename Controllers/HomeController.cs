@@ -142,6 +142,7 @@ namespace SoundBag.Controllers
         {
             Wrapper wrapper = new Wrapper();
             ApiKeys apiKey = new ApiKeys();
+            ViewBag.apiKey = apiKey.Google;
             int? UserId = HttpContext.Session.GetInt32("UserId");
             if(UserId == null)
             {
