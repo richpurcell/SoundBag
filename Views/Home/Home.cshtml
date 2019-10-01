@@ -15,18 +15,31 @@
     <div class="container">
         <div class="banner">
             <h1>SoundBag Festivals</h1>
-            <h4 class="name">Welcome, <a href="/mylist" class="name">@User.FirstName!</a></h4>
-            <h4><a href="/logout" class="logout">Logout</a></h4>
+            @{
+                if(Model.UserId == -1){
+                    <h4 class="name">Welcome!</h4>
+                    <h4><a href="/signin" class="logout">Login</a></h4>
+                } else {
+                    <h4 class="name">Welcome, <a href="/mylist" class="name">@User.FirstName!</a></h4>
+                    <h4><a href="/logout" class="logout">Logout</a></h4>
+                }
+            }
+            @using (Html.BeginForm())
+            {
+                <h6>
+                    Find by Festival: @Html.TextBox("SearchString")  
+                    <input type="submit" value="Search" class="btn btn-secondary"/></h6>
+            }
             <div class="line"></div>
         </div>
         <div class="table">
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                    <th scope="col"><h5>Festival</h5></th>
+                    <th scope="col"><h5>@Html.ActionLink("Festival", "Home", new { sortOrder = ViewBag.TitleSortParm })</h5></th>
                     <th scope="col"><h5>Tickets</h5></th>
-                    <th scope="col"><h5>Start Date</h5></th>
-                    <th scope="col"><h5>End Date</h5></th>
+                    <th scope="col"><h5>@Html.ActionLink("Start Date", "Home", new { sortOrder = ViewBag.DateSortParm })</h5></th>
+                    <th scope="col"><h5>@Html.ActionLink("End Date", "Home", new { sortOrder = ViewBag.eDateSortParm })</h5></th>
                     <th scope="col"><h5>Lineup</h5></th>
                     <th scope="col"><h5>Attending</h5></th>
                     <th scope="col"><h5>Actions</h5></th>
@@ -72,8 +85,10 @@
                     }
                 </tbody>
             </table>
-            @if(User.Admin == true){
-                <a href="/new" class="btn"><button class="btn btn-primary">Add Festival</button></a>
+            @if(Model.UserId != -1){
+                if(User.Admin == true){
+                    <a href="/new" class="btn"><button class="btn btn-primary">Add Festival</button></a>
+                }
             }
         </div>
     </div>

@@ -1,7 +1,9 @@
 body {background-image: url("/img/concert-768722_1920.jpg"); content: ""; top: 0; left: 0; bottom: 0; right: 0; position: absolute; z-index: 1;}
 div.container {color: white;}
 div.table table {color: black;}
-div.table thead {color: white;}
+div.table thead {color: #393333;}
+div.table thead a {color: #393333;}
+.btn-secondary {height: 28px; padding: 0px 10px;}
 h4.name {color: black; margin-left: 300px;}
 div.banner a.name {color: black;}
 div.banner {margin-top: 30px; display: block;}

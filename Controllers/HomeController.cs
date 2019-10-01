@@ -30,7 +30,7 @@ namespace SoundBag.Controllers
         [HttpGet("")]
         public IActionResult blank()
         {
-            return View("index");
+            return RedirectToAction("Home");
         }
         [HttpGet("signin")]
         public IActionResult Index()
@@ -44,7 +44,7 @@ namespace SoundBag.Controllers
             {
                 // If initial ModelState is valid, query for user with provided email
                 var userInDb = dbContext.users.FirstOrDefault(u => u.Email == myLogin.LoginEmail);
-                if(userInDb == null) // if User object returned is not defined (i.e. The User with myLogin.Password doesn't exist)
+                if(userInDb == null || userInDb.UserId == -1) // if User object returned is not defined (i.e. The User with myLogin.Password doesn't exist)
                 {
                     // Add a ModelState Error and return to the LoginRegistration page
                     ModelState.AddModelError("LoginEmail", "Invalid Email/Password");
@@ -100,7 +100,7 @@ namespace SoundBag.Controllers
         {
             // Only logged-in users should be able to see this page. If no user is in session, redirect to Login page. Done!
             int? UserId = HttpContext.Session.GetInt32("UserId");
-            if(UserId == null)
+            if(UserId == null || UserId == -1)
             {
                 return RedirectToAction("signin");
             }
@@ -117,7 +117,7 @@ namespace SoundBag.Controllers
         public IActionResult NewFestival()
         {
             int? UserId = HttpContext.Session.GetInt32("UserId");
-            if(UserId == null)
+            if(UserId == null || UserId == -1)
             {
                 return RedirectToAction("index");
             }
@@ -144,26 +144,22 @@ namespace SoundBag.Controllers
             ApiKeys apiKey = new ApiKeys();
             ViewBag.apiKey = apiKey.Google;
             int? UserId = HttpContext.Session.GetInt32("UserId");
-            if(UserId == null)
+            if(UserId == null || UserId == -1)
             {
-                return RedirectToAction("index");
+                UserId = -1;
             }
-            wrapper.OneFestival = dbContext.festivals.FirstOrDefault(u => u.FestivalId == FestivalId);
             wrapper.OnePost = new Post();
             wrapper.AllPosts = dbContext.posts
                 .Where(p=>p.FestivalId == FestivalId)
                 .OrderByDescending(p=>p.created_at)
                 .ToList();
             wrapper.AllUsers = dbContext.users.ToList();
-            string query = wrapper.OneFestival.Title;
-            var result = Helper.GetPhotsAsync(query);
-            ViewBag.Photos = result;
             wrapper.OneFestival = dbContext.festivals
                 .Include(w=>w.Attendees)
                 .ThenInclude(a=>a.Attendee)
                 .FirstOrDefault(w=>w.FestivalId == FestivalId);
-            string path = $"http://api.openweathermap.org/data/2.5/weather?q={wrapper.OneFestival.City}&units=imperial&appid={apiKey.Weather}";
-            wrapper.Weather = Helper.GetWeatherAsync(path);
+            var weather = Helper.GetWeatherAsync(wrapper.OneFestival.City);
+            wrapper.Weather = weather;
             wrapper.UserId = (int)UserId;
             return View("ViewFestival", wrapper);
         }
@@ -171,7 +167,7 @@ namespace SoundBag.Controllers
         public IActionResult Delete(int FestivalId)
         {
             int? UserId = HttpContext.Session.GetInt32("UserId");
-            if(UserId == null)
+            if(UserId == null || UserId == -1)
             {
                 return RedirectToAction("index");
             }
@@ -180,31 +176,60 @@ namespace SoundBag.Controllers
             dbContext.SaveChanges();
             return RedirectToAction("home");
         }
-        [HttpGet("home")]
-        public IActionResult Home()
+        // [HttpGet("home")]
+        public IActionResult Home(string sortOrder, string searchString)
         {
             Wrapper MyWrapper = new Wrapper();
             int? UserId = HttpContext.Session.GetInt32("UserId");
             if(UserId == null)
             {
-                return RedirectToAction("index");
+                UserId = -1;
+                HttpContext.Session.SetInt32("UserId", -1);
             }
+            ViewBag.TitleSortParm = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewBag.DateSortParm = sortOrder == "StartDate" ? "date_desc" : "StartDate";
+            ViewBag.eDateSortParm = sortOrder == "EndDate" ? "edate_desc" : "EndDate";
             MyWrapper.AllUsers = dbContext.users.ToList();
-            MyWrapper.AllFestivals = dbContext.festivals
+            var AllFestivals = from s in dbContext.festivals
                 .Where(a=>a.EndDate >= DateTime.Today)
                 .Include(w => w.Attendees)
                 .ThenInclude(a=>a.Attendee)
-                .OrderBy(act => act.StartDate)
-                .ToList();
+                select s;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                AllFestivals = AllFestivals.Where(s => s.Title.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    AllFestivals = AllFestivals.OrderByDescending(s => s.Title);
+                    break;
+                case "StartDate":
+                    AllFestivals = AllFestivals.OrderBy(s => s.StartDate);
+                    break;
+                case "date_desc":
+                    AllFestivals = AllFestivals.OrderByDescending(s => s.StartDate);
+                    break;
+                case "EndtDate":
+                    AllFestivals = AllFestivals.OrderBy(s => s.EndDate);
+                    break;
+                case "edate_desc":
+                    AllFestivals = AllFestivals.OrderByDescending(s => s.EndDate);
+                    break;
+                default:
+                    AllFestivals = AllFestivals.OrderBy(s => s.Title);
+                    break;
+            }
+            MyWrapper.AllFestivals = AllFestivals.ToList();
             MyWrapper.AllEvents = dbContext.associations.ToList();
             MyWrapper.UserId = (int)UserId;
-            return View("home", MyWrapper);
+            return View("Home", MyWrapper);
         }
         [HttpGet("join/{FestivalId}/stay")]
         public IActionResult JoinAndStay(int FestivalId)
         {
             int? UserId = HttpContext.Session.GetInt32("UserId");
-            if(UserId == null)
+            if(UserId == null || UserId == -1)
             {
                 return RedirectToAction("index");
             }
@@ -215,7 +240,7 @@ namespace SoundBag.Controllers
         public IActionResult JoinAndList(int FestivalId)
         {
             int? UserId = HttpContext.Session.GetInt32("UserId");
-            if(UserId == null)
+            if(UserId == null || UserId == -1)
             {
                 return RedirectToAction("index");
             }
@@ -227,7 +252,7 @@ namespace SoundBag.Controllers
         public IActionResult Join(int FestivalId)
         {
             int? UserId = HttpContext.Session.GetInt32("UserId");
-            if(UserId == null)
+            if(UserId == null || UserId == -1)
             {
                 return RedirectToAction("index");
             }
@@ -238,7 +263,7 @@ namespace SoundBag.Controllers
         public IActionResult LeaveAndStay(int FestivalId)
         {
             int? UserId = HttpContext.Session.GetInt32("UserId");
-            if(UserId == null)
+            if(UserId == null || UserId == -1)
             {
                 return RedirectToAction("index");
             }
@@ -249,19 +274,19 @@ namespace SoundBag.Controllers
         public IActionResult LeaveAndList(int FestivalId)
         {
             int? UserId = HttpContext.Session.GetInt32("UserId");
-            if(UserId == null)
+            if(UserId == null || UserId == -1)
             {
                 return RedirectToAction("index");
             }
             _helper_leave(FestivalId, (int)UserId);
-            return RedirectToAction("MyFestivals", new {FestivalId=$"{FestivalId}"});///////////////////////////////
+            return RedirectToAction("MyFestivals", new {FestivalId=$"{FestivalId}"});
         }
 
         [HttpGet("leave/{FestivalId}")]
         public IActionResult Leave(int FestivalId)
         {
             int? UserId = HttpContext.Session.GetInt32("UserId");
-            if(UserId == null)
+            if(UserId == null || UserId == -1)
             {
                 return RedirectToAction("index");
             }
@@ -276,24 +301,31 @@ namespace SoundBag.Controllers
         [HttpPost]
         public IActionResult Submit(Wrapper myPost)
         {
+            int? UserId = HttpContext.Session.GetInt32("UserId");
+            if(UserId == null || UserId == -1)
+            {
+                return RedirectToAction("index");
+            }
+            var id = myPost.OnePost.FestivalId;
             if(ModelState.IsValid)
             {
                 string Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                int? UserId = HttpContext.Session.GetInt32("UserId");
                 myPost.OnePost.UserId = (int)UserId;
                 dbContext.Add(myPost.OnePost);
                 dbContext.SaveChanges();
                 int x = myPost.OnePost.id;
+                // System.Console.WriteLine($"Not Sure why it's not getting FestivalId {id} -------------------++++++++++++++++++");
                 return RedirectToAction("ViewFestival", new {FestivalId=$"{myPost.OnePost.FestivalId}"});
             } else {
-                return View("ViewFestival");
+                // System.Console.WriteLine($"Not Sure why it's not getting FestivalId {id} -------------------++++++++++++++++++");
+                return RedirectToAction("ViewFestival", new {FestivalId=$"{myPost.OnePost.FestivalId}"});
             }
         }
         [HttpGet("mylist")]
         public IActionResult MyFestivals()
         {
             int? UserId = HttpContext.Session.GetInt32("UserId");
-            if(UserId == null)
+            if(UserId == null || UserId == -1)
             {
                 return RedirectToAction("index");
             }
@@ -350,10 +382,11 @@ namespace SoundBag.Controllers
     }
     public static class Helper
     {
-        public static async Task<Weather> GetWeatherAsync(string path)
+        public static async Task<Weather> GetWeatherAsync(string city)
         {
             HttpClient client = new HttpClient();
             Weather weather = null;
+            string path = $"http://api.openweathermap.org/data/2.5/weather?q={city}&units=imperial&appid={apiKey.Weather}";
             HttpResponseMessage response = await client.GetAsync(path);
             if (response.IsSuccessStatusCode)
             {
@@ -370,7 +403,7 @@ namespace SoundBag.Controllers
             query = query.Replace(" ", "+");
             string path = BaseUrl + "?key=" + apiKey.Pixabay + "&q=" + query + "&image_type=photo";
             HttpResponseMessage response = await aclient.GetAsync(path);
-            System.Console.WriteLine(path);
+            // System.Console.WriteLine(path);
             if (response.IsSuccessStatusCode)
             {
                 pixabay = await response.Content.ReadAsAsync<Pixabay>();

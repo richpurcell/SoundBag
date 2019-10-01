@@ -4,7 +4,7 @@
         @model Wrapper
         <form asp-action="Submit" asp-controller="Home" method="post">
                 <h3>Add a Post:</h3>
-                <input hidden asp-for="OnePost.FestivalId" value="@ViewBag.FestivalId" >
+                <input hidden asp-for="OnePost.FestivalId" value="@Model.OneFestival.FestivalId" >
                 <textarea rows="2" cols="10" asp-for="OnePost.PostContent" class="form-control"></textarea>
                 <button class="btn btn-primary" type="submit">Post</button>
         </form>
